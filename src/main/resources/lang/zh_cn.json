@@ -1,0 +1,12 @@
+{
+  "command.version": "VelocityHub: %s",
+  "command.help": "看 GitHub",
+  "command.reload": "重新加载 VelocityHub 中...",
+  "command.hub.message.transferred": "你刚才输入了 ./hub 或 ./lobby 然后来到了大厅服务器",
+  "command.hub.message.no_hub": "大厅服务器呢？让腐竹检查一下 velocity.toml 和 VelocityHub 的配置文件 (config.toml)",
+  "command.hub.message.console": "CONSOL 也想成为 ./hub-er 吗¿",
+  "command.hubQuery.message.time": "玩家 %s 食用了 %s 次 ./hub",
+  "command.hubStat.import.message": "导入 ./hub 的统计成功",
+  "command.hubStat.export.message": "导出 ./hub 的统计成功 (velocityhub/hubStat/export.toml)",
+  "command.hubStat.reset.message": "重置 ./hub 的统计成功"
+}

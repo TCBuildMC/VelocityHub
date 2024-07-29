@@ -1,0 +1,12 @@
+{
+  "command.version": "VelocityHub version: %s",
+  "command.help": "See GitHub.",
+  "command.reload": "Reloading VelocityHub...",
+  "command.hub.message.transferred": "You have been transferred to the hub server.",
+  "command.hub.message.no_hub": "The hub server wasn't defined. Please check velocity.toml and VelocityHub's config file (config.toml).",
+  "command.hub.message.console": "You are CONSOL! Not a player!",
+  "command.hubQuery.message.time": "Player %s have used ./hub %s time.",
+  "command.hubStat.import.message": "Success to import hub stat.",
+  "command.hubStat.export.message": "Success to export hub stat. (velocityhub/hubStat/export.toml)",
+  "command.hubStat.reset.message": "Success to reset hub stat."
+}
