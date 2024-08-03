@@ -70,6 +70,7 @@ public class VelocityHub {
         }
 
         instance = this;
+        Translations.addLanguageSupport("zh_cn");
         Map<String, String> translations = Translations.getTranslationsFromClasspath("lang", Translations.getLocalLanguage(), "json", DefaultParsers.gson());
         Translations.setTranslations(translations);
 
