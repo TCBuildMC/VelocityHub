@@ -99,7 +99,7 @@ public class VelocityHub {
         this.config = ConfigApi.getInstance().read(VelocityHubConfig.class,
                 this.configFile,
                 DefaultParsers.toml4j(false));
-        Map<String, String> translations = Translations.getTranslationsFromClasspath("lang/%s.json".formatted(Translations.getLanguage()), DefaultParsers.gson());
+        Map<String, String> translations = Translations.getTranslationsFromClasspath("lang", Translations.getLocalLanguage(), "json", DefaultParsers.gson());
         Translations.setTranslations(translations);
 
         CommandHub.exportStat();
