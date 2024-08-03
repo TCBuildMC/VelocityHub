@@ -31,11 +31,15 @@ dependencies {
     annotationProcessor("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
 
     implementation "com.moandjiezana.toml:toml4j:0.7.2"
-    implementation("com.github.TCBuildMC:SimpleConfigApi:1.3.1") {
+    implementation("com.github.TCBuildMC.SimpleTools:Config:dc6c382cc1") {
         transitive false
     }
 
-    implementation("com.github.TCBuildMC:SimpleTools:1.0.2") {
+    implementation("com.github.TCBuildMC.SimpleTools:I18n:dc6c382cc1") {
+        transitive false
+    }
+
+    implementation("com.github.TCBuildMC.SimpleTools:Utilities:dc6c382cc1") {
         transitive false
     }
 

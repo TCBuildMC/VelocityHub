@@ -7,9 +7,9 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
-import xyz.tcbuildmc.common.config.v0.api.SimpleConfigApi;
-import xyz.tcbuildmc.common.config.v0.api.parser.DefaultParsers;
-import xyz.tcbuildmc.common.util.simpletools.i18n.Translations;
+import xyz.tcbuildmc.common.config.api.ConfigApi;
+import xyz.tcbuildmc.common.config.api.parser.DefaultParsers;
+import xyz.tcbuildmc.common.i18n.Translations;
 import xyz.tcbuildmc.minecraft.plugin.velocityhub.VelocityHub;
 import xyz.tcbuildmc.minecraft.plugin.velocityhub.config.VelocityHubConfig;
 
@@ -48,17 +48,61 @@ public class CommandHub {
                                 RegisteredServer lobby = optionalLobby.get();
                                 player.createConnectionRequest(lobby).fireAndForget();
 
-                                source.sendMessage(Component.text(Translations.getTranslations("command.hub.message.transferred")));
+                                source.sendMessage(Component.text(Translations.getTranslation("command.hub.message.transferred")));
                             } else {
-                                source.sendMessage(Component.text(Translations.getTranslations("command.hub.message.no_hub")));
+                                source.sendMessage(Component.text(Translations.getTranslation("command.hub.message.no_hub")));
                             }
                         } else {
-                            source.sendMessage(Component.text(Translations.getTranslations("command.hub.message.console")));
+                            source.sendMessage(Component.text(Translations.getTranslation("command.hub.message.console")));
                         }
                     }
 
                     return 0;
                 })
+                .then(BrigadierCommand.requiredArgumentBuilder("player", StringArgumentType.word())
+                        .suggests((context, builder) -> {
+                            ProxyServer server = VelocityHub.getInstance().getServer();
+                            for (Player player : server.getAllPlayers()) {
+                                builder.suggest(player.getUsername());
+                            }
+
+                            return builder.buildFuture();
+                        })
+                        .requires(source -> source.hasPermission("velocityhub.command.hub.other"))
+                        .executes(context -> {
+                            VelocityHubConfig config = VelocityHub.getInstance().getConfig();
+
+                            if (config.isEnableHub()) {
+                                CommandSource source = context.getSource();
+                                String player = context.getArgument("player", String.class);
+
+                                if (!hubStat.containsKey(player)) {
+                                    hubStat.put(player, 1);
+                                } else {
+                                    hubStat.merge(player,
+                                            hubStat.get(player) + 1,
+                                            (a, b) -> b);
+                                }
+
+                                ProxyServer server = VelocityHub.getInstance().getServer();
+                                Optional<RegisteredServer> optionalLobby = server.getServer(config.getHubServer());
+
+                                if (optionalLobby.isPresent()) {
+                                    RegisteredServer lobby = optionalLobby.get();
+                                    VelocityHub.getInstance()
+                                            .getServer()
+                                            .getPlayer(player)
+                                            .ifPresent(p -> p.createConnectionRequest(lobby)
+                                                    .fireAndForget());
+
+                                    source.sendMessage(Component.text(Translations.getTranslation("command.hub.other.message.transferred")));
+                                } else {
+                                    source.sendMessage(Component.text(Translations.getTranslation("command.hub..message.no_hub")));
+                                }
+                            }
+
+                            return 0;
+                        }))
                 .build());
     }
 
@@ -77,7 +121,7 @@ public class CommandHub {
 
                         if (source instanceof Player player) {
                             source.sendMessage(Component.text(
-                                    Translations.getTranslations("command.hubQuery.message.time")
+                                    Translations.getTranslation("command.hubQuery.message.time")
                                             .formatted(player.getUsername(), hubStat.getOrDefault(player.getUsername(), 0))));
                         }
                     }
@@ -102,7 +146,7 @@ public class CommandHub {
                                 String player = context.getArgument("player", String.class);
 
                                 source.sendMessage(Component.text(
-                                        Translations.getTranslations("command.hubQuery.message.time")
+                                        Translations.getTranslation("command.hubQuery.message.time")
                                                 .formatted(player, hubStat.getOrDefault(player, 0))));
                             }
 
@@ -122,7 +166,7 @@ public class CommandHub {
                                 CommandSource source = context.getSource();
                                 importStat();
 
-                                source.sendMessage(Component.text(Translations.getTranslations("command.hubStat.import.message")));
+                                source.sendMessage(Component.text(Translations.getTranslation("command.hubStat.import.message")));
                             }
 
                             return 0;
@@ -136,7 +180,7 @@ public class CommandHub {
                                 CommandSource source = context.getSource();
                                 exportStat();
 
-                                source.sendMessage(Component.text(Translations.getTranslations("command.hubStat.export.message")));
+                                source.sendMessage(Component.text(Translations.getTranslation("command.hubStat.export.message")));
                             }
 
                             return 0;
@@ -149,7 +193,7 @@ public class CommandHub {
                             if (config.isEnableHubStat()) {
                                 resetStat();
 
-                                context.getSource().sendMessage(Component.text(Translations.getTranslations("command.hubStat.reset.message")));
+                                context.getSource().sendMessage(Component.text(Translations.getTranslation("command.hubStat.reset.message")));
                             }
 
                             return 0;
@@ -173,7 +217,7 @@ public class CommandHub {
             }
 
 
-            hubStat = SimpleConfigApi.getInstance().read(LinkedHashMap.class,
+            hubStat = ConfigApi.getInstance().read(LinkedHashMap.class,
                     exportFile,
                     DefaultParsers.toml4j(false));
         }
@@ -182,7 +226,7 @@ public class CommandHub {
     public static void exportStat() {
         VelocityHubConfig config = VelocityHub.getInstance().getConfig();
         if (config.isEnableHubStat()) {
-            SimpleConfigApi.getInstance().write(Map.class,
+            ConfigApi.getInstance().write(Map.class,
                     hubStat,
                     exportFile,
                     DefaultParsers.toml4j(false));

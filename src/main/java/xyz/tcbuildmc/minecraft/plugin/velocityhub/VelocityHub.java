@@ -10,9 +10,9 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
 import org.slf4j.Logger;
-import xyz.tcbuildmc.common.config.v0.api.SimpleConfigApi;
-import xyz.tcbuildmc.common.config.v0.api.parser.DefaultParsers;
-import xyz.tcbuildmc.common.util.simpletools.i18n.Translations;
+import xyz.tcbuildmc.common.config.api.ConfigApi;
+import xyz.tcbuildmc.common.config.api.parser.DefaultParsers;
+import xyz.tcbuildmc.common.i18n.Translations;
 import xyz.tcbuildmc.minecraft.plugin.velocityhub.command.CommandHub;
 import xyz.tcbuildmc.minecraft.plugin.velocityhub.command.VelocityHubCommand;
 import xyz.tcbuildmc.minecraft.plugin.velocityhub.config.VelocityHubConfig;
@@ -59,18 +59,18 @@ public class VelocityHub {
                 this.configFile.getParentFile().mkdirs();
             }
 
-            SimpleConfigApi.getInstance().write(VelocityHubConfig.class,
+            ConfigApi.getInstance().write(VelocityHubConfig.class,
                     this.config,
                     this.configFile,
                     DefaultParsers.toml4j(false));
         } else {
-            this.config = SimpleConfigApi.getInstance().read(VelocityHubConfig.class,
+            this.config = ConfigApi.getInstance().read(VelocityHubConfig.class,
                     this.configFile,
                     DefaultParsers.toml4j(false));
         }
 
         instance = this;
-        Map<String, String> translations = Translations.getTranslationsFromClasspath("lang/%s.json".formatted(Translations.getLanguage()), DefaultParsers.gson());
+        Map<String, String> translations = Translations.getTranslationsFromClasspath("lang", Translations.getLocalLanguage(), "json", DefaultParsers.gson());
         Translations.setTranslations(translations);
 
         if (config.isAutoResetStat()) {
@@ -91,12 +91,12 @@ public class VelocityHub {
     }
 
     public void reload() {
-        SimpleConfigApi.getInstance().write(VelocityHubConfig.class,
+        ConfigApi.getInstance().write(VelocityHubConfig.class,
                 this.config,
                 this.configFile,
                 DefaultParsers.toml4j(false));
 
-        this.config = SimpleConfigApi.getInstance().read(VelocityHubConfig.class,
+        this.config = ConfigApi.getInstance().read(VelocityHubConfig.class,
                 this.configFile,
                 DefaultParsers.toml4j(false));
         Map<String, String> translations = Translations.getTranslationsFromClasspath("lang/%s.json".formatted(Translations.getLanguage()), DefaultParsers.gson());
@@ -108,7 +108,7 @@ public class VelocityHub {
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent e) {
-        SimpleConfigApi.getInstance().write(VelocityHubConfig.class,
+        ConfigApi.getInstance().write(VelocityHubConfig.class,
                 this.config,
                 this.configFile,
                 DefaultParsers.toml4j(false));
