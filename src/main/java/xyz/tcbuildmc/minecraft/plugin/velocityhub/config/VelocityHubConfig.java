@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class VelocityHubConfig {
-    private final String version = "3";
     private boolean enableHub = true;
     private boolean enableHubQuery = true;
     private boolean enableHubStat = true;
